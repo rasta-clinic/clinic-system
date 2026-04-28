@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سیستم کلینیک</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="sidebar">
+<h2>کلینیک</h2>
+<ul>
+<li>داشبورد</li>
+<li>نوبت ها</li>
+<li>درمانگرها</li>
+<li>مالی</li>
+</ul>
+</div>
+
+<div class="main">
+
+<div class="top">
+<h1>پنل مدیریت کلینیک</h1>
+<p>مدیریت نوبت ها و پرداخت ها</p>
+</div>
+
+<div class="stats">
+<div class="card">
+<h3>درآمد کل</h3>
+<h2>{{ "{:,}".format(total) }} تومان</h2>
+</div>
+
+<div class="card">
+<h3>تعداد نوبت ها</h3>
+<h2>{{ appointments|length }}</h2>
+</div>
+</div>
+
+<div class="form-box">
+<form method="POST" action="/add">
+
+<input name="patient" placeholder="نام مراجع" required>
+<input name="therapist" placeholder="نام درمانگر" required>
+<input name="time" placeholder="ساعت نوبت" required>
+
+<select name="status">
+<option>رزرو اولیه</option>
+<option>قطعی</option>
+<option>کنسل</option>
+<option>انجام شده</option>
+</select>
+
+<input name="payment" placeholder="مبلغ پرداختی">
+
+<button type="submit">ثبت نوبت</button>
+
+</form>
+</div>
+
+<div class="table">
+<div class="row head">
+<div>مراجع</div>
+<div>درمانگر</div>
+<div>ساعت</div>
+<div>وضعیت</div>
+<div>پرداخت</div>
+</div>
+
+{% for a in appointments %}
+<div class="row">
+<div>{{ a[1] }}</div>
+<div>{{ a[2] }}</div>
+<div>{{ a[3] }}</div>
+<div>{{ a[4] }}</div>
+<div>{{ a[5] }} تومان</div>
+</div>
+{% endfor %}
+</div>
+
+</div>
+
+</body>
+</html>
