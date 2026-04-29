@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <title>پنل کلینیک</title>
+
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+
+<div class="sidebar">
+
+    <h2>کلینیک</h2>
+
+    <ul>
+        <li>داشبورد</li>
+        <li>نوبت ها</li>
+        <li>درمانگران</li>
+        <li>مالی</li>
+    </ul>
+
+</div>
+
+<div class="main">
+
+    <div class="top">
+        پنل مدیریت کلینیک
+    </div>
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>تعداد نوبت ها</h3>
+            <p>{{ appointments|length }}</p>
+        </div>
+
+    </div>
+
+    <div class="form-box">
+
+        <h3>ثبت نوبت جدید</h3>
+
+        <form action="/add" method="POST">
+
+            <input type="text" name="patient" placeholder="نام مراجعه کننده" required>
+
+            <input type="text" name="therapist" placeholder="نام درمانگر" required>
+
+            <input type="text" name="time" placeholder="ساعت" required>
+
+            <input type="text" name="price" placeholder="هزینه" required>
+
+            <button type="submit">
+                ثبت نوبت
+            </button>
+
+        </form>
+
+    </div>
+
+    <div class="table-box">
+
+        <h3>لیست نوبت ها</h3>
+
+        <table>
+
+            <tr>
+                <th>مراجع</th>
+                <th>درمانگر</th>
+                <th>ساعت</th>
+                <th>هزینه</th>
+            </tr>
+
+            {% for item in appointments %}
+
+            <tr>
+                <td>{{ item[1] }}</td>
+                <td>{{ item[2] }}</td>
+                <td>{{ item[3] }}</td>
+                <td>{{ item[4] }}</td>
+            </tr>
+
+            {% endfor %}
+
+        </table>
+
+    </div>
+
+</div>
+
+</body>
+</html>
