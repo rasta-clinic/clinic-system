@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html dir="rtl" lang="fa">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>کلینیک</title>
+
+<title>پنل کلینیک</title>
 
 <style>
 
 body{
 font-family:tahoma;
-background:#f5f7fb;
+background:#f4f7fb;
 margin:0;
 padding:0;
 }
@@ -34,13 +36,14 @@ margin-bottom:20px;
 box-shadow:0 2px 10px rgba(0,0,0,0.08);
 }
 
-input,select{
+input{
 width:100%;
 padding:14px;
 margin-top:10px;
 border-radius:12px;
 border:1px solid #ddd;
 font-size:16px;
+box-sizing:border-box;
 }
 
 button{
@@ -85,13 +88,33 @@ border-bottom:1px solid #eee;
 
 <form method="POST" action="/add">
 
-<input name="patient" placeholder="نام مراجعه کننده">
+<input
+type="text"
+name="patient"
+placeholder="نام مراجعه کننده"
+required
+>
 
-<input name="doctor" placeholder="نام درمانگر">
+<input
+type="text"
+name="therapist"
+placeholder="نام درمانگر"
+required
+>
 
-<input name="time" placeholder="ساعت">
+<input
+type="text"
+name="time"
+placeholder="ساعت"
+required
+>
 
-<input name="price" placeholder="هزینه">
+<input
+type="text"
+name="price"
+placeholder="هزینه"
+required
+>
 
 <button type="submit">
 ثبت نوبت
@@ -112,22 +135,22 @@ border-bottom:1px solid #eee;
 <div class="appointment">
 
 <b>مراجع:</b>
-{{item.patient}}
+{{ item[1] }}
 
 <br><br>
 
 <b>درمانگر:</b>
-{{item.doctor}}
+{{ item[2] }}
 
 <br><br>
 
 <b>ساعت:</b>
-{{item.time}}
+{{ item[3] }}
 
 <br><br>
 
 <b>هزینه:</b>
-{{item.price}}
+{{ item[4] }}
 
 </div>
 
