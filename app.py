@@ -3,8 +3,8 @@ import sqlite3
 
 app = Flask(__name__)
 
-# ساخت دیتابیس
 def init_db():
+
     conn = sqlite3.connect("clinic.db")
     cursor = conn.cursor()
 
@@ -14,7 +14,7 @@ def init_db():
         patient TEXT,
         therapist TEXT,
         time TEXT,
-        price INTEGER
+        price TEXT
     )
     """)
 
@@ -32,15 +32,11 @@ def home():
     cursor.execute("SELECT * FROM appointments")
     appointments = cursor.fetchall()
 
-    total_income = sum([row[4] for row in appointments])
-
     conn.close()
 
     return render_template(
-        "dashboard.html",
-        appointments=appointments,
-        total_income=total_income,
-        total_count=len(appointments)
+        "index.html",
+        appointments=appointments
     )
 
 @app.route("/add", methods=["POST"])
