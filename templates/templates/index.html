@@ -1,92 +1,139 @@
 <!DOCTYPE html>
-<html dir="rtl">
-
+<html dir="rtl" lang="fa">
 <head>
-    <meta charset="UTF-8">
-    <title>پنل کلینیک</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>کلینیک</title>
 
-    <link rel="stylesheet" href="/static/css/style.css">
+<style>
+
+body{
+font-family:tahoma;
+background:#f5f7fb;
+margin:0;
+padding:0;
+}
+
+.header{
+background:white;
+padding:20px;
+font-size:28px;
+font-weight:bold;
+box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+.container{
+padding:20px;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:20px;
+margin-bottom:20px;
+box-shadow:0 2px 10px rgba(0,0,0,0.08);
+}
+
+input,select{
+width:100%;
+padding:14px;
+margin-top:10px;
+border-radius:12px;
+border:1px solid #ddd;
+font-size:16px;
+}
+
+button{
+width:100%;
+padding:15px;
+margin-top:15px;
+border:none;
+border-radius:14px;
+background:#2d8cff;
+color:white;
+font-size:18px;
+}
+
+.title{
+font-size:24px;
+font-weight:bold;
+margin-bottom:15px;
+}
+
+.appointment{
+padding:15px;
+border-bottom:1px solid #eee;
+}
+
+</style>
+
 </head>
 
 <body>
 
-<div class="sidebar">
+<div class="header">
+پنل مدیریت کلینیک
+</div>
 
-    <h2>کلینیک</h2>
+<div class="container">
 
-    <ul>
-        <li>داشبورد</li>
-        <li>نوبت ها</li>
-        <li>درمانگران</li>
-        <li>مالی</li>
-    </ul>
+<div class="card">
+
+<div class="title">
+ثبت نوبت
+</div>
+
+<form method="POST" action="/add">
+
+<input name="patient" placeholder="نام مراجعه کننده">
+
+<input name="doctor" placeholder="نام درمانگر">
+
+<input name="time" placeholder="ساعت">
+
+<input name="price" placeholder="هزینه">
+
+<button type="submit">
+ثبت نوبت
+</button>
+
+</form>
 
 </div>
 
-<div class="main">
+<div class="card">
 
-    <div class="top">
-        پنل مدیریت کلینیک
-    </div>
+<div class="title">
+لیست نوبت ها
+</div>
 
-    <div class="cards">
+{% for item in appointments %}
 
-        <div class="card">
-            <h3>تعداد نوبت ها</h3>
-            <p>{{ appointments|length }}</p>
-        </div>
+<div class="appointment">
 
-    </div>
+<b>مراجع:</b>
+{{item.patient}}
 
-    <div class="form-box">
+<br><br>
 
-        <h3>ثبت نوبت جدید</h3>
+<b>درمانگر:</b>
+{{item.doctor}}
 
-        <form action="/add" method="POST">
+<br><br>
 
-            <input type="text" name="patient" placeholder="نام مراجعه کننده" required>
+<b>ساعت:</b>
+{{item.time}}
 
-            <input type="text" name="therapist" placeholder="نام درمانگر" required>
+<br><br>
 
-            <input type="text" name="time" placeholder="ساعت" required>
+<b>هزینه:</b>
+{{item.price}}
 
-            <input type="text" name="price" placeholder="هزینه" required>
+</div>
 
-            <button type="submit">
-                ثبت نوبت
-            </button>
+{% endfor %}
 
-        </form>
-
-    </div>
-
-    <div class="table-box">
-
-        <h3>لیست نوبت ها</h3>
-
-        <table>
-
-            <tr>
-                <th>مراجع</th>
-                <th>درمانگر</th>
-                <th>ساعت</th>
-                <th>هزینه</th>
-            </tr>
-
-            {% for item in appointments %}
-
-            <tr>
-                <td>{{ item[1] }}</td>
-                <td>{{ item[2] }}</td>
-                <td>{{ item[3] }}</td>
-                <td>{{ item[4] }}</td>
-            </tr>
-
-            {% endfor %}
-
-        </table>
-
-    </div>
+</div>
 
 </div>
 
