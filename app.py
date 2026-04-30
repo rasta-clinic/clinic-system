@@ -1,65 +1,47 @@
-from flask import Flask, render_template, request, redirect
-import sqlite3
+from flask import Flask, render_template
 
 app = Flask(__name__)
 
-def init_db():
-
-    conn = sqlite3.connect("clinic.db")
-    cursor = conn.cursor()
-
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS appointments (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        patient TEXT,
-        therapist TEXT,
-        time TEXT,
-        price TEXT
-    )
-    """)
-
-    conn.commit()
-    conn.close()
-
-init_db()
-
-@app.route("/")
+# صفحه اصلی
+@app.route('/')
 def home():
+    return render_template('index.html')
 
-    conn = sqlite3.connect("clinic.db")
-    cursor = conn.cursor()
+# صفحه ورود
+@app.route('/login')
+def login():
+    return render_template('login.html')
 
-    cursor.execute("SELECT * FROM appointments")
-    appointments = cursor.fetchall()
+# پنل مدیر
+@app.route('/admin')
+def admin_dashboard():
+    return render_template('admin_dashboard.html')
 
-    conn.close()
+# پنل پذیرش
+@app.route('/reception')
+def reception_dashboard():
+    return render_template('reception_dashboard.html')
 
-    return render_template(
-        "index.html",
-        appointments=appointments
-    )
+# پنل درمانگر
+@app.route('/therapist')
+def therapist_dashboard():
+    return render_template('therapist_dashboard.html')
 
-@app.route("/add", methods=["POST"])
-def add():
+# صفحه نوبت‌ها
+@app.route('/appointments')
+def appointments():
+    return render_template('appointments.html')
 
-    patient = request.form["patient"]
-    therapist = request.form["therapist"]
-    time = request.form["time"]
-    price = request.form["price"]
+# صفحه مراجعین
+@app.route('/patients')
+def patients():
+    return render_template('patients.html')
 
-    conn = sqlite3.connect("clinic.db")
-    cursor = conn.cursor()
+# صفحه درمانگران
+@app.route('/therapists')
+def therapists():
+    return render_template('therapists.html')
 
-    cursor.execute("""
-    INSERT INTO appointments
-    (patient, therapist, time, price)
-    VALUES (?, ?, ?, ?)
-    """, (patient, therapist, time, price))
 
-    conn.commit()
-    conn.close()
-
-    return redirect("/")
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+if __name__ == '__main__':
+    app.run(debug=True)
