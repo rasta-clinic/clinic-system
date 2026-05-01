@@ -16,6 +16,8 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
+
+# -------------------- مدل نوبت --------------------
 class Appointment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     patient_name = db.Column(db.String(100))
@@ -23,6 +25,7 @@ class Appointment(db.Model):
     date = db.Column(db.String(20))
     time = db.Column(db.String(20))
     status = db.Column(db.String(20), default="booked")
+
 # -------------------- ساخت دیتابیس و ادمین --------------------
 with app.app_context():
     db.create_all()
@@ -59,7 +62,27 @@ def admin_dashboard():
     if 'user_id' not in session:
         return redirect('/login')
 
-    return render_template('admin_dashboard.html')
+    appointments = Appointment.query.all()
+
+    return render_template('admin_dashboard.html', appointments=appointments)
+
+# ثبت نوبت
+@app.route('/add_appointment', methods=['POST'])
+def add_appointment():
+    if 'user_id' not in session:
+        return redirect('/login')
+
+    new_appointment = Appointment(
+        patient_name=request.form['patient_name'],
+        therapist_name=request.form['therapist_name'],
+        date=request.form['date'],
+        time=request.form['time']
+    )
+
+    db.session.add(new_appointment)
+    db.session.commit()
+
+    return redirect('/admin')
 
 @app.route('/reception')
 def reception_dashboard():
@@ -80,27 +103,7 @@ def patients():
 @app.route('/therapists')
 def therapists():
     return render_template('therapists.html')
-@app.route('/add_appointment', methods=['POST'])
-def add_appointment():
-    if 'user_id' not in session:
-        return redirect('/login')
 
-    patient_name = request.form['patient_name']
-    therapist_name = request.form['therapist_name']
-    date = request.form['date']
-    time = request.form['time']
-
-    new_appointment = Appointment(
-        patient_name=patient_name,
-        therapist_name=therapist_name,
-        date=date,
-        time=time
-    )
-
-    db.session.add(new_appointment)
-    db.session.commit()
-
-    return redirect('/admin')
 # -------------------- اجرا روی Render --------------------
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
