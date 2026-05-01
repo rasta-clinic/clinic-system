@@ -1,48 +1,29 @@
-<div class="header" style="
-    background:#2f3b52;
-    color:white;
-    padding:15px 20px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    border-radius:10px;
-">
+def add_appointment():
 
-    <div style="display:flex; align-items:center; gap:20px;">
+    patient_name = request.form['patient_name']
+    date = request.form['date']
+    time = request.form['time']
+    therapist_id = request.form['therapist_id']
 
-        <div style="font-weight:bold;">
-            Rasta Clinic | Therapist Panel
-        </div>
+    # 🔒 جلوگیری از رزرو تکراری
+    existing = Appointment.query.filter_by(
+        therapist_id=therapist_id,
+        date=date,
+        time=time
+    ).first()
 
-        <a href="/calendar" style="
-            color:white;
-            text-decoration:none;
-            font-size:14px;
-            opacity:0.9;
-        ">
-            My Calendar
-        </a>
+    if existing:
+        return "This time slot is already booked!"
 
-        <a href="/weekly-calendar" style="
-            color:white;
-            text-decoration:none;
-            font-size:14px;
-            opacity:0.9;
-        ">
-            Weekly Calendar
-        </a>
+    new_app = Appointment(
+        patient_name=patient_name,
+        date=date,
+        time=time,
+        therapist_id=therapist_id,
+        status="booked"
+    )
 
-    </div>
+    db.session.add(new_app)
+    db.session.commit()
 
-    <div>
-        <a href="/logout" style="
-            color:white;
-            text-decoration:none;
-            font-size:14px;
-            opacity:0.9;
-        ">
-            Logout
-        </a>
-    </div>
-
-</div>
+    return redirect('/admin')
