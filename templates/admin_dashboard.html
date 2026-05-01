@@ -1,43 +1,127 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Admin Dashboard</title>
+<meta charset="UTF-8">
+<title>Rasta Clinic Panel</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #f4f6f9;
+    margin: 0;
+    padding: 0;
+}
+
+.header {
+    background: #2f3b52;
+    color: white;
+    padding: 20px;
+    font-size: 20px;
+}
+
+.container {
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+input {
+    padding: 10px;
+    margin: 5px;
+    width: 200px;
+}
+
+button {
+    padding: 10px 15px;
+    background: #2f80ed;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+th, td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+.status {
+    padding: 5px 10px;
+    border-radius: 6px;
+    background: #eee;
+    font-size: 12px;
+}
+
+.delete {
+    color: red;
+    text-decoration: none;
+}
+</style>
 </head>
+
 <body>
 
-<h1>Admin Panel - Rasta Clinic</h1>
+<div class="header">
+Rasta Clinic | Admin Dashboard
+</div>
 
-<h2>Add Appointment</h2>
+<div class="container">
+
+<div class="card">
+<h3>Add Appointment</h3>
 
 <form action="/add_appointment" method="POST">
-    <input type="text" name="patient_name" placeholder="Patient Name" required>
-    <br><br>
-
-    <input type="text" name="therapist_name" placeholder="Therapist Name" required>
-    <br><br>
-
-    <input type="text" name="date" placeholder="Date" required>
-    <br><br>
-
-    <input type="text" name="time" placeholder="Time" required>
-    <br><br>
-
-    <button type="submit">Save Appointment</button>
+    <input name="patient_name" placeholder="Patient">
+    <input name="therapist_name" placeholder="Therapist">
+    <input name="date" placeholder="Date">
+    <input name="time" placeholder="Time">
+    <button type="submit">Save</button>
 </form>
+</div>
 
-<hr>
+<div class="card">
+<h3>Appointments</h3>
 
-<h2>Appointments List</h2>
+<table>
+<tr>
+    <th>Patient</th>
+    <th>Therapist</th>
+    <th>Date</th>
+    <th>Time</th>
+    <th>Status</th>
+    <th>Action</th>
+</tr>
 
 {% for a in appointments %}
-    <div style="border:1px solid #ccc; padding:10px; margin:10px;">
-        <p>Patient: {{ a.patient_name }}</p>
-        <p>Therapist: {{ a.therapist_name }}</p>
-        <p>Date: {{ a.date }}</p>
-        <p>Time: {{ a.time }}</p>
-        <p>Status: {{ a.status }}</p>
-    </div>
+<tr>
+    <td>{{ a.patient_name }}</td>
+    <td>{{ a.therapist_name }}</td>
+    <td>{{ a.date }}</td>
+    <td>{{ a.time }}</td>
+    <td><span class="status">{{ a.status }}</span></td>
+    <td>
+        <a class="delete" href="/delete_appointment/{{ a.id }}">Delete</a>
+    </td>
+</tr>
 {% endfor %}
+</table>
+
+</div>
+
+</div>
 
 </body>
 </html>
