@@ -16,7 +16,13 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
-
+class Appointment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    patient_name = db.Column(db.String(100))
+    therapist_name = db.Column(db.String(100))
+    date = db.Column(db.String(20))
+    time = db.Column(db.String(20))
+    status = db.Column(db.String(20), default="booked")
 # -------------------- ساخت دیتابیس و ادمین --------------------
 with app.app_context():
     db.create_all()
