@@ -228,6 +228,35 @@ def weekly_calendar():
     ).all()
 
     return render_template('weekly_calendar.html', appointments=appointments)
+    @app.route('/quick-book')
+def quick_book():
+
+    day = request.args.get('day')
+    time = request.args.get('time')
+
+    therapist_id = session.get('user_id')  # فرض: درمانگر لاگین کرده
+
+    existing = Appointment.query.filter_by(
+        therapist_id=therapist_id,
+        date=day,
+        time=time
+    ).first()
+
+    if existing:
+        return "Already booked!"
+
+    new_app = Appointment(
+        patient_name="Walk-in",
+        date=day,
+        time=time,
+        therapist_id=therapist_id,
+        status="booked"
+    )
+
+    db.session.add(new_app)
+    db.session.commit()
+
+    return redirect('/weekly-calendar')
 # ---------------- RUN ----------------
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
