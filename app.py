@@ -182,7 +182,18 @@ def update_status(id, new_status):
         return redirect('/admin')
 
     return redirect('/reception')
+@app.route('/reports')
+def reports():
+    if session.get('role') != "admin":
+        return redirect('/login')
 
+    report = db.session.query(
+        User.username,
+        func.count(Appointment.id)
+    ).join(Appointment, Appointment.therapist_id == User.id)\
+     .group_by(User.username).all()
+
+    return render_template('reports.html', report=report)
 # ---------------- RUN ----------------
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
