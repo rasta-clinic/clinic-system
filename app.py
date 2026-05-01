@@ -80,7 +80,27 @@ def patients():
 @app.route('/therapists')
 def therapists():
     return render_template('therapists.html')
+@app.route('/add_appointment', methods=['POST'])
+def add_appointment():
+    if 'user_id' not in session:
+        return redirect('/login')
 
+    patient_name = request.form['patient_name']
+    therapist_name = request.form['therapist_name']
+    date = request.form['date']
+    time = request.form['time']
+
+    new_appointment = Appointment(
+        patient_name=patient_name,
+        therapist_name=therapist_name,
+        date=date,
+        time=time
+    )
+
+    db.session.add(new_appointment)
+    db.session.commit()
+
+    return redirect('/admin')
 # -------------------- اجرا روی Render --------------------
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
