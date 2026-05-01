@@ -1,141 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Rasta Clinic</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f4f7fb;
-            display: flex;
-        }
-
-        .sidebar {
-            width: 240px;
-            background: #2D3E50;
-            color: white;
-            height: 100vh;
-            padding: 20px;
-        }
-
-        .sidebar h2 {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .sidebar a {
-            display: block;
-            color: white;
-            text-decoration: none;
-            padding: 12px;
-            margin: 8px 0;
-            border-radius: 8px;
-        }
-
-        .sidebar a:hover {
-            background: rgba(255,255,255,0.1);
-        }
-
-        .main {
-            flex: 1;
-            padding: 30px;
-        }
-
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .card {
-            background: white;
-            padding: 25px;
-            border-radius: 14px;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-            text-align: center;
-        }
-
-        .card h3 {
-            margin: 0;
-            color: #555;
-        }
-
-        .card p {
-            font-size: 28px;
-            margin-top: 10px;
-            font-weight: bold;
-        }
-
-        .table-box {
-            background: white;
-            padding: 20px;
-            border-radius: 14px;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            padding: 14px;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-        }
-
-        th {
-            background: #f9fafc;
-        }
-    </style>
+    <title>Admin Dashboard</title>
 </head>
 <body>
 
-<div class="sidebar">
-    <h2>Rasta Clinic</h2>
-    <a href="/admin">Dashboard</a>
-    <a href="/appointments">Appointments</a>
-    <a href="/patients">Patients</a>
-    <a href="/therapists">Therapists</a>
-    <a href="/login">Logout</a>
-</div>
+<h1>Admin Panel - Rasta Clinic</h1>
 
-<div class="main">
-    <h1>Admin Dashboard</h1>
+<h2>Add Appointment</h2>
 
-    <div class="cards">
-        <div class="card">
-            <h3>Therapists</h3>
-            <p>12</p>
-        </div>
+<form action="/add_appointment" method="POST">
+    <input type="text" name="patient_name" placeholder="Patient Name" required>
+    <br><br>
 
-        <div class="card">
-            <h3>Today Appointments</h3>
-            <p>28</p>
-        </div>
+    <input type="text" name="therapist_name" placeholder="Therapist Name" required>
+    <br><br>
 
-        <div class="card">
-            <h3>Patients</h3>
-            <p>145</p>
-        </div>
+    <input type="text" name="date" placeholder="Date" required>
+    <br><br>
 
-        <div class="card">
-            <h3>Revenue</h3>
-            <p>$2,400</p>
-        </div>
+    <input type="text" name="time" placeholder="Time" required>
+    <br><br>
+
+    <button type="submit">Save Appointment</button>
+</form>
+
+<hr>
+
+<h2>Appointments List</h2>
+
+{% for a in appointments %}
+    <div style="border:1px solid #ccc; padding:10px; margin:10px;">
+        <p>Patient: {{ a.patient_name }}</p>
+        <p>Therapist: {{ a.therapist_name }}</p>
+        <p>Date: {{ a.date }}</p>
+        <p>Time: {{ a.time }}</p>
+        <p>Status: {{ a.status }}</p>
     </div>
+{% endfor %}
 
-    <div class="table-box">
-        <h2>Today Schedule</h2>
-
-        <table>
-            <tr>
-                <th>Patient</th>
-                <th>Therapist</th>
-                <th>Time</th>
-            </tr>
-
-           
+</body>
+</html>
