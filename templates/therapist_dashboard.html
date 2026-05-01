@@ -1,110 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Therapist Panel</title>
+<h2>Therapist Dashboard</h2>
 
-<style>
-body {
-    font-family: Arial;
-    background: #f4f6f9;
-    margin: 0;
-}
-
-.header {
-    background: #2f3b52;
-    color: white;
-    padding: 20px;
-    display: flex;
-    justify-content: space-between;
-}
-
-.container {
-    padding: 20px;
-}
-
-.card {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th, td {
-    padding: 12px;
-    border-bottom: 1px solid #ddd;
-    text-align: left;
-}
-
-.status-booked {
-    color: #2f80ed;
-    font-weight: bold;
-}
-
-.status-done {
-    color: green;
-    font-weight: bold;
-}
-
-.status-canceled {
-    color: red;
-    font-weight: bold;
-}
-</style>
-</head>
-
-<body>
-
-<div class="header">
-    <div>
-        Rasta Clinic | Therapist Panel
-
-        <a href="/calendar" style="color:white; margin-left:15px;">
-            My Calendar
-        </a>
-
-        <a href="/weekly-calendar" style="color:white; margin-left:15px;">
-            Weekly Calendar
-        </a>
-    </div>
-
-    <div>
-        <a href="/logout" style="color:white;">Logout</a>
-    </div>
-</div>
-<div class="container">
-
-<div class="card">
-    <h3>My Appointments</h3>
-
-    <table>
-        <tr>
-            <th>Patient</th>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Status</th>
-        </tr>
-
-        {% for a in appointments %}
-        <tr>
-            <td>{{ a.patient_name }}</td>
-            <td>{{ a.date }}</td>
-            <td>{{ a.time }}</td>
-            <td class="status-{{ a.status }}">{{ a.status }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-
+<div>
+    <p>Total Patients: {{ total }}</p>
+    <p>Done Sessions: {{ done }}</p>
 </div>
 
-</div>
+<h3>Today Appointments</h3>
+<ul>
+    {% for a in today_appointments %}
+        <li>{{ a.patient_name }} - {{ a.time }} - {{ a.status }}</li>
+    {% endfor %}
+</ul>
 
-</body>
-</html>
+<h3>All Appointments</h3>
+<ul>
+    {% for a in all_appointments %}
+        <li>{{ a.date }} | {{ a.patient_name }} | {{ a.time }} | {{ a.status }}</li>
+    {% endfor %}
+</ul>
