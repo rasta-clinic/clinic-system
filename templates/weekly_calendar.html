@@ -66,14 +66,23 @@ body {
 
         <h4>{{ day }}</h4>
 
-        {% for a in appointments %}
-            {% if a.day == day %}
-                <div class="appointment">
-                    {{ a.patient_name }} <br>
-                    ⏰ {{ a.time }}
-                </div>
-            {% endif %}
-        {% endfor %}
+{% for a in appointments %}
+    {% if a.day == day %}
+        <div class="appointment">
+            {{ a.patient_name }} <br>
+            ⏰ {{ a.time }}
+        </div>
+    {% endif %}
+{% endfor %}
+
+<!-- 👇 ساعت‌های خالی قابل رزرو -->
+<a href="/quick-book?day={{ day }}&time=10:00" style="display:block; margin-top:5px; padding:5px; background:#eee; border-radius:5px; text-decoration:none;">
+    + 10:00 Book
+</a>
+
+<a href="/quick-book?day={{ day }}&time=11:00" style="display:block; margin-top:5px; padding:5px; background:#eee; border-radius:5px; text-decoration:none;">
+    + 11:00 Book
+</a>
 
     </div>
     {% endfor %}
