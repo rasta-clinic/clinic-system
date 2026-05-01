@@ -204,8 +204,9 @@ def reports():
      .group_by(User.username).all()
 
     return render_template('reports.html', report=report)
-    @app.route('/calendar')
+   @app.route('/calendar')
 def calendar():
+
     if session.get('role') != "therapist":
         return redirect('/login')
 
@@ -213,6 +214,9 @@ def calendar():
 
     appointments = Appointment.query.filter_by(
         therapist_id=therapist_id
+    ).all()
+
+    return render_template('calendar.html', appointments=appointments)
     ).order_by(Appointment.date).all()
 
     return render_template('calendar.html', appointments=appointments)
