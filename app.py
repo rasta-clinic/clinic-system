@@ -3,10 +3,11 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 from datetime import datetime
 from sqlalchemy import func
+
 app = Flask(__name__)
 app.secret_key = "rasta-secret-key"
 
-# دیتابیس
+# ---------------- DATABASE ----------------
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///clinic.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -17,7 +18,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
-    role = db.Column(db.String(20), nullable=False)  # admin / reception / therapist
+    role = db.Column(db.String(20), nullable=False)
 
 # ---------------- APPOINTMENTS ----------------
 class Appointment(db.Model):
@@ -28,21 +29,17 @@ class Appointment(db.Model):
     time = db.Column(db.String(20), nullable=False)
     status = db.Column(db.String(20), default="booked")
 
-# ---------------- DATABASE SETUP ----------------
+# ---------------- INIT DB ----------------
 with app.app_context():
     db.create_all()
 
-    # ادمین اصلی
     if not User.query.filter_by(username="admin").first():
         db.session.add(User(username="admin", password="1234", role="admin"))
 
-    # پذیرش
     if not User.query.filter_by(username="reception").first():
         db.session.add(User(username="reception", password="1234", role="reception"))
 
-    # نمونه درمانگرها
-    therapists = ["sara", "ali", "mina"]
-    for t in therapists:
+    for t in ["sara", "ali", "mina"]:
         if not User.query.filter_by(username=t).first():
             db.session.add(User(username=t, password="1234", role="therapist"))
 
@@ -52,10 +49,10 @@ with app.app_context():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-
-        user = User.query.filter_by(username=username, password=password).first()
+        user = User.query.filter_by(
+            username=request.form['username'],
+            password=request.form['password']
+        ).first()
 
         if user:
             session['user_id'] = user.id
@@ -63,11 +60,9 @@ def login():
 
             if user.role == "admin":
                 return redirect('/admin')
-
-            elif user.role == "reception":
+            if user.role == "reception":
                 return redirect('/reception')
-
-            elif user.role == "therapist":
+            if user.role == "therapist":
                 return redirect('/therapist')
 
         return "Login Failed"
@@ -80,62 +75,52 @@ def logout():
     session.clear()
     return redirect('/login')
 
-# ---------------- ADMIN PANEL ----------------
+# ---------------- ADMIN ----------------
 @app.route('/admin')
 def admin_dashboard():
     if session.get('role') != "admin":
         return redirect('/login')
 
-    appointments = Appointment.query.all()
-    therapists = User.query.filter_by(role="therapist").all()
-
     return render_template(
         'admin_dashboard.html',
-        appointments=appointments,
-        therapists=therapists
+        appointments=Appointment.query.all(),
+        therapists=User.query.filter_by(role="therapist").all()
     )
 
-# ---------------- RECEPTION PANEL ----------------
+# ---------------- RECEPTION ----------------
 @app.route('/reception')
 def reception_dashboard():
     if session.get('role') != "reception":
         return redirect('/login')
 
-    appointments = Appointment.query.all()
-    therapists = User.query.filter_by(role="therapist").all()
-
     return render_template(
         'reception_dashboard.html',
-        appointments=appointments,
-        therapists=therapists
+        appointments=Appointment.query.all(),
+        therapists=User.query.filter_by(role="therapist").all()
     )
 
-# ---------------- THERAPIST PANEL ----------------
+# ---------------- THERAPIST ----------------
 @app.route('/therapist')
 def therapist_dashboard():
     if session.get('role') != "therapist":
         return redirect('/login')
 
-    therapist_id = session['user_id']
-
-    appointments = Appointment.query.filter_by(
-        therapist_id=therapist_id
-    ).all()
-
     return render_template(
         'therapist_dashboard.html',
-        appointments=appointments
+        appointments=Appointment.query.filter_by(
+            therapist_id=session.get('user_id')
+        ).all()
     )
 
 # ---------------- ADD APPOINTMENT ----------------
+@app.route('/add_appointment', methods=['POST'])
 def add_appointment():
 
-    patient_name = request.form['patient_name']
+    therapist_id = request.form['therapist_id']
     date = request.form['date']
     time = request.form['time']
-    therapist_id = request.form['therapist_id']
+    patient_name = request.form['patient_name']
 
-    # 🔒 چک کردن اینکه این ساعت پر نباشه
     existing = Appointment.query.filter_by(
         therapist_id=therapist_id,
         date=date,
@@ -143,57 +128,51 @@ def add_appointment():
     ).first()
 
     if existing:
-        return "This time slot is already booked!"
+        return "This slot is already booked"
 
-    new_app = Appointment(
+    db.session.add(Appointment(
         patient_name=patient_name,
+        therapist_id=therapist_id,
         date=date,
         time=time,
-        therapist_id=therapist_id,
         status="booked"
-    )
+    ))
 
-    db.session.add(new_app)
     db.session.commit()
-
     return redirect('/admin')
-    return redirect('/reception')
 
 # ---------------- DELETE ----------------
 @app.route('/delete_appointment/<int:id>')
 def delete_appointment(id):
+
     if session.get('role') not in ["admin", "reception"]:
         return redirect('/login')
 
     appt = Appointment.query.get(id)
-
     if appt:
         db.session.delete(appt)
         db.session.commit()
 
-    if session.get('role') == "admin":
-        return redirect('/admin')
+    return redirect('/admin' if session.get('role') == "admin" else '/reception')
 
-    return redirect('/reception')
-
-# ---------------- STATUS ----------------
+# ---------------- STATUS UPDATE ----------------
 @app.route('/update_status/<int:id>/<string:new_status>')
 def update_status(id, new_status):
+
     if session.get('role') not in ["admin", "reception"]:
         return redirect('/login')
 
     appt = Appointment.query.get(id)
-
     if appt:
         appt.status = new_status
         db.session.commit()
 
-    if session.get('role') == "admin":
-        return redirect('/admin')
+    return redirect('/admin' if session.get('role') == "admin" else '/reception')
 
-    return redirect('/reception')
+# ---------------- REPORTS ----------------
 @app.route('/reports')
 def reports():
+
     if session.get('role') != "admin":
         return redirect('/login')
 
@@ -204,44 +183,47 @@ def reports():
      .group_by(User.username).all()
 
     return render_template('reports.html', report=report)
-   @app.route('/calendar')
+
+# ---------------- CALENDAR ----------------
+@app.route('/calendar')
 def calendar():
 
     if session.get('role') != "therapist":
         return redirect('/login')
 
-    therapist_id = session['user_id']
+    return render_template(
+        'calendar.html',
+        appointments=Appointment.query.filter_by(
+            therapist_id=session.get('user_id')
+        ).order_by(Appointment.date).all()
+    )
 
-    appointments = Appointment.query.filter_by(
-        therapist_id=therapist_id
-    ).all()
-
-    return render_template('calendar.html', appointments=appointments)
-    ).order_by(Appointment.date).all()
-
-    return render_template('calendar.html', appointments=appointments)
-    @app.route('/weekly-calendar')
+# ---------------- WEEKLY ----------------
+@app.route('/weekly-calendar')
 def weekly_calendar():
+
     if session.get('role') != "therapist":
         return redirect('/login')
 
-    therapist_id = session['user_id']
+    return render_template(
+        'weekly_calendar.html',
+        appointments=Appointment.query.filter_by(
+            therapist_id=session.get('user_id')
+        ).all()
+    )
 
-    appointments = Appointment.query.filter_by(
-        therapist_id=therapist_id
-    ).all()
-
-    return render_template('weekly_calendar.html', appointments=appointments)
-    @app.route('/quick-book')
+# ---------------- QUICK BOOK ----------------
+@app.route('/quick-book')
 def quick_book():
+
+    if not session.get('user_id'):
+        return redirect('/login')
 
     day = request.args.get('day')
     time = request.args.get('time')
 
-    therapist_id = session.get('user_id')  # فرض: درمانگر لاگین کرده
-
     existing = Appointment.query.filter_by(
-        therapist_id=therapist_id,
+        therapist_id=session['user_id'],
         date=day,
         time=time
     ).first()
@@ -249,18 +231,17 @@ def quick_book():
     if existing:
         return "Already booked!"
 
-    new_app = Appointment(
+    db.session.add(Appointment(
         patient_name="Walk-in",
         date=day,
         time=time,
-        therapist_id=therapist_id,
+        therapist_id=session['user_id'],
         status="booked"
-    )
+    ))
 
-    db.session.add(new_app)
     db.session.commit()
-
     return redirect('/weekly-calendar')
+
 # ---------------- RUN ----------------
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
