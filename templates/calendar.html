@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>My Calendar</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #f4f6f9;
+    margin: 0;
+}
+
+.header {
+    background: #2f3b52;
+    color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.container {
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.item {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+}
+
+.booked { background: #2f80ed; color: white; }
+.done { background: green; color: white; }
+.canceled { background: red; color: white; }
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <div>My Weekly Schedule</div>
+    <div><a href="/logout" style="color:white;">Logout</a></div>
+</div>
+
+<div class="container">
+
+<div class="card">
+
+<h3>My Appointments</h3>
+
+{% for a in appointments %}
+<div class="item">
+    <b>{{ a.patient_name }}</b><br>
+    📅 {{ a.date }} | ⏰ {{ a.time }}<br>
+
+    <span class="badge {{ a.status }}">{{ a.status }}</span>
+</div>
+{% endfor %}
+
+</div>
+
+</div>
+
+</body>
+</html>
