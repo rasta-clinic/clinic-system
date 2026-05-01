@@ -1,9 +1,11 @@
 from flask import Flask, render_template, request, redirect, session
 from flask_sqlalchemy import SQLAlchemy
+import os
 
 app = Flask(__name__)
 app.secret_key = "rasta-secret"
 
+# دیتابیس
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///clinic.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -15,9 +17,8 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
 
-# -------------------- ساخت ادمین اولیه --------------------
-@app.before_first_request
-def create_admin():
+# -------------------- ساخت دیتابیس و ادمین --------------------
+with app.app_context():
     db.create_all()
 
     admin = User.query.filter_by(username="admin").first()
@@ -26,7 +27,7 @@ def create_admin():
         db.session.add(admin)
         db.session.commit()
 
-# -------------------- صفحات ساده --------------------
+# -------------------- صفحات --------------------
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -74,9 +75,7 @@ def patients():
 def therapists():
     return render_template('therapists.html')
 
-# -------------------- اجرا --------------------
-import os
-
+# -------------------- اجرا روی Render --------------------
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
     app.run(host='0.0.0.0', port=port)
