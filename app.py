@@ -206,6 +206,18 @@ def calendar():
     ).order_by(Appointment.date).all()
 
     return render_template('calendar.html', appointments=appointments)
+    @app.route('/weekly-calendar')
+def weekly_calendar():
+    if session.get('role') != "therapist":
+        return redirect('/login')
+
+    therapist_id = session['user_id']
+
+    appointments = Appointment.query.filter_by(
+        therapist_id=therapist_id
+    ).all()
+
+    return render_template('weekly_calendar.html', appointments=appointments)
 # ---------------- RUN ----------------
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
