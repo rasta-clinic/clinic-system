@@ -128,25 +128,35 @@ def therapist_dashboard():
     )
 
 # ---------------- ADD APPOINTMENT ----------------
-@app.route('/add_appointment', methods=['POST'])
 def add_appointment():
-    if session.get('role') not in ["admin", "reception"]:
-        return redirect('/login')
 
-    new_appointment = Appointment(
-        patient_name=request.form['patient_name'],
-        therapist_id=request.form['therapist_id'],
-        date=request.form['date'],
-        time=request.form['time'],
+    patient_name = request.form['patient_name']
+    date = request.form['date']
+    time = request.form['time']
+    therapist_id = request.form['therapist_id']
+
+    # 🔒 چک کردن اینکه این ساعت پر نباشه
+    existing = Appointment.query.filter_by(
+        therapist_id=therapist_id,
+        date=date,
+        time=time
+    ).first()
+
+    if existing:
+        return "This time slot is already booked!"
+
+    new_app = Appointment(
+        patient_name=patient_name,
+        date=date,
+        time=time,
+        therapist_id=therapist_id,
         status="booked"
     )
 
-    db.session.add(new_appointment)
+    db.session.add(new_app)
     db.session.commit()
 
-    if session.get('role') == "admin":
-        return redirect('/admin')
-
+    return redirect('/admin')
     return redirect('/reception')
 
 # ---------------- DELETE ----------------
