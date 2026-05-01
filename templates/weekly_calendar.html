@@ -1,29 +1,84 @@
-def add_appointment():
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Weekly Calendar</title>
 
-    patient_name = request.form['patient_name']
-    date = request.form['date']
-    time = request.form['time']
-    therapist_id = request.form['therapist_id']
+<style>
+body {
+    font-family: Arial;
+    background: #f5f6fa;
+    margin: 0;
+}
 
-    # 🔒 جلوگیری از رزرو تکراری
-    existing = Appointment.query.filter_by(
-        therapist_id=therapist_id,
-        date=date,
-        time=time
-    ).first()
+.header {
+    background: #2f3b52;
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
 
-    if existing:
-        return "This time slot is already booked!"
+.container {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    padding: 20px;
+}
 
-    new_app = Appointment(
-        patient_name=patient_name,
-        date=date,
-        time=time,
-        therapist_id=therapist_id,
-        status="booked"
-    )
+.day {
+    background: white;
+    border-radius: 10px;
+    padding: 10px;
+    min-height: 300px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
 
-    db.session.add(new_app)
-    db.session.commit()
+.day h4 {
+    text-align: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
 
-    return redirect('/admin')
+.appointment {
+    background: #2f80ed;
+    color: white;
+    padding: 8px;
+    border-radius: 6px;
+    margin-top: 5px;
+    font-size: 12px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+    Weekly Calendar (Therapist View)
+</div>
+
+<div class="container">
+
+    {% set days = ["Sat","Sun","Mon","Tue","Wed","Thu","Fri"] %}
+
+    {% for day in days %}
+    <div class="day">
+
+        <h4>{{ day }}</h4>
+
+        {% for a in appointments %}
+            {% if a.day == day %}
+                <div class="appointment">
+                    {{ a.patient_name }} <br>
+                    ⏰ {{ a.time }}
+                </div>
+            {% endif %}
+        {% endfor %}
+
+    </div>
+    {% endfor %}
+
+</div>
+
+</body>
+</html>
