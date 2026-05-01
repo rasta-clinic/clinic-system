@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, session
 from flask_sqlalchemy import SQLAlchemy
 import os
 from datetime import datetime
-
+from sqlalchemy import func
 app = Flask(__name__)
 app.secret_key = "rasta-secret-key"
 
