@@ -102,14 +102,32 @@ def reception_dashboard():
 # ---------------- THERAPIST ----------------
 @app.route('/therapist')
 def therapist_dashboard():
+
     if session.get('role') != "therapist":
         return redirect('/login')
 
+    therapist_id = session.get('user_id')
+
+    today = datetime.now().date().isoformat()
+
+    today_appointments = Appointment.query.filter_by(
+        therapist_id=therapist_id,
+        date=today
+    ).all()
+
+    all_appointments = Appointment.query.filter_by(
+        therapist_id=therapist_id
+    ).order_by(Appointment.date).all()
+
+    total = len(all_appointments)
+    done = len([a for a in all_appointments if a.status == "done"])
+
     return render_template(
         'therapist_dashboard.html',
-        appointments=Appointment.query.filter_by(
-            therapist_id=session.get('user_id')
-        ).all()
+        today_appointments=today_appointments,
+        all_appointments=all_appointments,
+        total=total,
+        done=done
     )
 
 # ---------------- ADD APPOINTMENT ----------------
