@@ -1,20 +1,28 @@
-<h2>Therapist Dashboard</h2>
+<div style="direction: rtl; font-family: sans-serif;">
 
-<div>
-    <p>Total Patients: {{ total }}</p>
-    <p>Done Sessions: {{ done }}</p>
+<h2>پنل درمانگر</h2>
+
+<div style="background:#f5f5f5; padding:10px; border-radius:8px;">
+    <p>تعداد کل مراجعین: {{ total }}</p>
+    <p>جلسات انجام‌شده: {{ done }}</p>
 </div>
 
-<h3>Today Appointments</h3>
+<h3>نوبت‌های امروز</h3>
 <ul>
     {% for a in today_appointments %}
-        <li>{{ a.patient_name }} - {{ a.time }} - {{ a.status }}</li>
+        <li>
+            {{ a.patient_name }} - ساعت {{ a.time }} - وضعیت: {{ a.status }}
+        </li>
     {% endfor %}
 </ul>
 
-<h3>All Appointments</h3>
+<h3>تمام نوبت‌ها</h3>
 <ul>
     {% for a in all_appointments %}
-        <li>{{ a.date }} | {{ a.patient_name }} | {{ a.time }} | {{ a.status }}</li>
+        <li>
+            {{ a.date }} | {{ a.patient_name }} | {{ a.time }} | {{ a.status }}
+        </li>
     {% endfor %}
 </ul>
+
+</div>
