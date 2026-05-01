@@ -103,7 +103,18 @@ def patients():
 @app.route('/therapists')
 def therapists():
     return render_template('therapists.html')
+@app.route('/update_status/<int:id>/<string:new_status>')
+def update_status(id, new_status):
+    if 'user_id' not in session:
+        return redirect('/login')
 
+    appt = Appointment.query.get(id)
+
+    if appt:
+        appt.status = new_status
+        db.session.commit()
+
+    return redirect('/admin')
 # -------------------- اجرا روی Render --------------------
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
