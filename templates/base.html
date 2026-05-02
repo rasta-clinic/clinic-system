@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>کلینیک روانشناسی رستا</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Tahoma, sans-serif;
+            background: #f4f7fb;
+        }
+
+        .topbar {
+            background: #3f51b5;
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 20px;
+        }
+
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background: white;
+            position: fixed;
+            right: 0;
+            top: 0;
+            border-left: 1px solid #ddd;
+            padding-top: 70px;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 15px 20px;
+            color: #333;
+            text-decoration: none;
+            border-bottom: 1px solid #eee;
+            font-size: 16px;
+        }
+
+        .sidebar a:hover {
+            background: #eef4ff;
+        }
+
+        .content {
+            margin-right: 270px;
+            padding: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #4a90e2;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 10px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 14px;
+            border-bottom: 1px solid #eee;
+            text-align: center;
+        }
+
+        th {
+            background: #eef4ff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <div>کلینیک رستا</div>
+    <div>پنل مدیریت</div>
+</div>
+
+<div class="sidebar">
+    <a href="/admin">داشبورد</a>
+    <a href="/calendar">تقویم</a>
+    <a href="/weekly-calendar">تقویم هفتگی</a>
+    <a href="/reports">گزارش‌ها</a>
+    <a href="/logout">خروج</a>
+</div>
+
+<div class="content">
+    {% block content %}{% endblock %}
+</div>
+
+</body>
+</html>
