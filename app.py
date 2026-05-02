@@ -102,34 +102,41 @@ def reception_dashboard():
 # ---------------- THERAPIST ----------------
 @app.route('/therapist')
 def therapist_dashboard():
-
     if session.get('role') != "therapist":
         return redirect('/login')
 
-    therapist_id = session.get('user_id')
+    therapist_id = session['user_id']
 
-    today = datetime.now().date().isoformat()
+    # همه نوبت‌ها
+    all_appointments = Appointment.query.filter_by(
+        therapist_id=therapist_id
+    ).all()
 
+    # تاریخ امروز
+    today = datetime.now().strftime("%Y-%m-%d")
+
+    # نوبت‌های امروز
     today_appointments = Appointment.query.filter_by(
         therapist_id=therapist_id,
         date=today
     ).all()
 
-    all_appointments = Appointment.query.filter_by(
-        therapist_id=therapist_id
-    ).order_by(Appointment.date).all()
-
+    # تعداد کل
     total = len(all_appointments)
-    done = len([a for a in all_appointments if a.status == "done"])
+
+    # جلسات انجام شده
+    done = Appointment.query.filter_by(
+        therapist_id=therapist_id,
+        status="done"
+    ).count()
 
     return render_template(
         'therapist_dashboard.html',
-        today_appointments=today_appointments,
         all_appointments=all_appointments,
+        today_appointments=today_appointments,
         total=total,
         done=done
     )
-
 # ---------------- ADD APPOINTMENT ----------------
 @app.route('/add_appointment', methods=['POST'])
 def add_appointment():
