@@ -1,156 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Panel</title>
+{% extends "base.html" %}
 
-<style>
-body {
-    font-family: Arial;
-    background: #f4f6f9;
-    margin: 0;
-}
+{% block content %}
 
-.header {
-    background: #1f2d3d;
-    color: white;
-    padding: 20px;
-    display: flex;
-    justify-content: space-between;
-}
-
-.container {
-    padding: 20px;
-}
-
-.card {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-}
-
-input, select {
-    padding: 10px;
-    margin: 5px;
-    width: 200px;
-}
-
-button {
-    padding: 10px 15px;
-    background: #2f80ed;
-    color: white;
-    border: none;
-    border-radius: 6px;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th, td {
-    padding: 12px;
-    border-bottom: 1px solid #ddd;
-    text-align: left;
-}
-
-.delete {
-    color: red;
-    text-decoration: none;
-}
-
-.stats {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-
-.stat-box {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    min-width: 200px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-</style>
-</head>
-
-<body>
-
-<div class="header">
-    <div>Rasta Clinic | Admin Dashboard</div>
-    <div><a href="/logout" style="color:white;">Logout</a></div>
-</div>
-
-<div class="container">
-
-<div class="stats">
-    <div class="stat-box">
-        <h3>Total Appointments</h3>
-        <p>{{ appointments|length }}</p>
-    </div>
-
-    <div class="stat-box">
-        <h3>Total Therapists</h3>
-        <p>{{ therapists|length }}</p>
-    </div>
+<div class="card">
+    <h2>پنل مدیریت کلینیک</h2>
+    <p>تعداد کل نوبت‌ها: {{ appointments|length }}</p>
+    <p>تعداد درمانگران: {{ therapists|length }}</p>
 </div>
 
 <div class="card">
-<h3>Add Appointment</h3>
+    <h3>ثبت نوبت جدید</h3>
 
-<form action="/add_appointment" method="POST">
-    <input type="text" name="patient_name" placeholder="Patient Name" required>
+    <form action="/add_appointment" method="POST">
+        <input type="text" name="patient_name" placeholder="نام مراجع" required>
+        <input type="date" name="date" required>
+        <input type="time" name="time" required>
 
-    <select name="therapist_id" required>
-        <option value="">Select Therapist</option>
-        {% for t in therapists %}
+        <select name="therapist_id">
+            {% for t in therapists %}
             <option value="{{ t.id }}">{{ t.username }}</option>
-        {% endfor %}
-    </select>
+            {% endfor %}
+        </select>
 
-    <input type="date" name="date" required>
-    <input type="time" name="time" required>
-
-    <button type="submit">Save Appointment</button>
-</form>
+        <button type="submit">ثبت نوبت</button>
+    </form>
 </div>
 
 <div class="card">
-<h3>All Appointments</h3>
+    <h3>لیست نوبت‌ها</h3>
 
-<table>
-<tr>
-    <th>Patient</th>
-    <th>Therapist ID</th>
-    <th>Date</th>
-    <th>Time</th>
-    <th>Status</th>
-    <th>Actions</th>
-</tr>
+    <table>
+        <tr>
+            <th>نام مراجع</th>
+            <th>تاریخ</th>
+            <th>ساعت</th>
+            <th>وضعیت</th>
+        </tr>
 
-{% for a in appointments %}
-<tr>
-    <td>{{ a.patient_name }}</td>
-    <td>{{ a.therapist_id }}</td>
-    <td>{{ a.date }}</td>
-    <td>{{ a.time }}</td>
-    <td>{{ a.status }}</td>
-    <td>
-        <a href="/update_status/{{ a.id }}/done">Done</a> |
-        <a href="/update_status/{{ a.id }}/canceled">Cancel</a> |
-        <a class="delete" href="/delete_appointment/{{ a.id }}">Delete</a>
-    </td>
-</tr>
-{% endfor %}
-
-</table>
+        {% for a in appointments %}
+        <tr>
+            <td>{{ a.patient_name }}</td>
+            <td>{{ a.date }}</td>
+            <td>{{ a.time }}</td>
+            <td>{{ a.status }}</td>
+        </tr>
+        {% endfor %}
+    </table>
 </div>
 
-</div>
-
-</body>
-</html>
+{% endblock %}
