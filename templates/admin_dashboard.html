@@ -9,20 +9,56 @@
 </div>
 
 <div class="card">
-    <h3>ثبت نوبت جدید</h3>
+    <h3>ثبت مراجع / نوبت جدید</h3>
 
     <form action="/add_appointment" method="POST">
-        <input type="text" name="patient_name" placeholder="نام مراجع" required>
-        <input type="date" name="date" required>
-        <input type="time" name="time" required>
 
-        <select name="therapist_id">
+        <input type="text"
+               name="patient_name"
+               placeholder="نام مراجع"
+               required>
+
+        <input type="date"
+               name="date"
+               required>
+
+        <input type="time"
+               name="time"
+               required>
+
+        <select name="therapist_id" required>
             {% for t in therapists %}
-            <option value="{{ t.id }}">{{ t.username }}</option>
+            <option value="{{ t.id }}">
+                {{ t.username }}
+            </option>
             {% endfor %}
         </select>
 
-        <button type="submit">ثبت نوبت</button>
+        <input type="number"
+               name="payment_amount"
+               placeholder="مبلغ پرداختی">
+
+        <select name="payment_status">
+            <option value="پرداخت نشده">پرداخت نشده</option>
+            <option value="بیعانه">بیعانه</option>
+            <option value="کامل">کامل</option>
+        </select>
+
+        <select name="payment_method">
+            <option value="">روش پرداخت</option>
+            <option value="کارت به کارت">کارت به کارت</option>
+            <option value="نقدی">نقدی</option>
+            <option value="درگاه">درگاه</option>
+        </select>
+
+        <input type="text"
+               name="tracking_code"
+               placeholder="کد پیگیری">
+
+        <button type="submit">
+            ثبت نوبت
+        </button>
+
     </form>
 </div>
 
@@ -35,6 +71,9 @@
             <th>تاریخ</th>
             <th>ساعت</th>
             <th>وضعیت</th>
+            <th>پرداخت</th>
+            <th>مبلغ</th>
+            <th>کد پیگیری</th>
         </tr>
 
         {% for a in appointments %}
@@ -43,6 +82,9 @@
             <td>{{ a.date }}</td>
             <td>{{ a.time }}</td>
             <td>{{ a.status }}</td>
+            <td>{{ a.payment_status }}</td>
+            <td>{{ a.paid_amount }}</td>
+            <td>{{ a.tracking_code }}</td>
         </tr>
         {% endfor %}
     </table>
