@@ -2,45 +2,194 @@
 
 {% block content %}
 
-<div class="card">
-    <h2>تقویم نوبت‌ها</h2>
-    <p>برای مشاهده نوبت‌های هر روز، تاریخ را از لیست انتخاب کنید</p>
-</div>
+<style>
+    body {
+        direction: rtl;
+        font-family: Tahoma;
+    }
 
-<div class="card">
-    <form method="GET" action="/calendar">
+    .calendar-box {
+        background: white;
+        padding: 20px;
+        border-radius: 14px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
 
-        <input type="date" name="selected_date">
+    .month-title {
+        text-align: center;
+        font-size: 28px;
+        margin-bottom: 25px;
+        font-weight: bold;
+    }
 
-        <button type="submit">
-            مشاهده
-        </button>
+    .weekdays, .days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        text-align: center;
+        gap: 10px;
+    }
 
-    </form>
-</div>
+    .weekdays div {
+        font-weight: bold;
+        padding: 10px 0;
+    }
 
-<div class="card">
-    <h3>نوبت‌های روز انتخاب‌شده</h3>
+    .day {
+        padding: 14px 0;
+        border-radius: 10px;
+        background: #f4f7fb;
+        cursor: pointer;
+        position: relative;
+        transition: 0.2s;
+    }
 
-    <table>
-        <tr>
-            <th>نام مراجع</th>
-            <th>ساعت</th>
-            <th>وضعیت</th>
-            <th>پرداخت</th>
-            <th>مبلغ</th>
-        </tr>
+    .day:hover {
+        background: #d9ecff;
+    }
 
-        {% for a in appointments %}
-        <tr>
-            <td>{{ a.patient_name }}</td>
-            <td>{{ a.time }}</td>
-            <td>{{ a.status }}</td>
-            <td>{{ a.payment_status }}</td>
-            <td>{{ a.paid_amount }}</td>
-        </tr>
+    .has-appointment {
+        background: #2f80ed;
+        color: white;
+    }
+
+    .selected-day {
+        background: #00c2ea !important;
+        color: white;
+    }
+
+    .appointments-box {
+        margin-top: 35px;
+    }
+
+    .appointments-box table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+
+    .appointments-box th,
+    .appointments-box td {
+        padding: 12px;
+        border-bottom: 1px solid #ddd;
+        text-align: center;
+    }
+
+    .status-paid {
+        color: green;
+        font-weight: bold;
+    }
+
+    .status-unpaid {
+        color: red;
+        font-weight: bold;
+    }
+</style>
+
+<div class="calendar-box">
+
+    <h2 style="text-align:center;">مشاهده نوبت‌ها</h2>
+
+    <div class="month-title">
+        اردیبهشت ۱۴۰۵
+    </div>
+
+    <div class="weekdays">
+        <div>شنبه</div>
+        <div>یکشنبه</div>
+        <div>دوشنبه</div>
+        <div>سه‌شنبه</div>
+        <div>چهارشنبه</div>
+        <div>پنجشنبه</div>
+        <div>جمعه</div>
+    </div>
+
+    <div class="days">
+        {% for day in range(1, 32) %}
+
+            {% set has_appt = namespace(found=false) %}
+
+            {% for a in appointments %}
+                {% if a.date.endswith("-%02d"|format(day)) %}
+                    {% set has_appt.found = true %}
+                {% endif %}
+            {% endfor %}
+
+            <div class="day {% if has_appt.found %}has-appointment{% endif %}"
+                 onclick="showAppointments('{{ '%02d' % day }}')">
+
+                {{ day }}
+
+            </div>
+
         {% endfor %}
-    </table>
+    </div>
+
+    <div class="appointments-box">
+
+        <h3 id="selected-date-title">
+            لیست نوبت‌ها
+        </h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>نام مراجع</th>
+                    <th>ساعت</th>
+                    <th>وضعیت جلسه</th>
+                    <th>پرداخت</th>
+                    <th>مبلغ</th>
+                </tr>
+            </thead>
+
+            <tbody id="appointments-list">
+
+                {% for a in appointments %}
+                <tr data-day="{{ a.date[-2:] }}" style="display:none;">
+                    <td>{{ a.patient_name }}</td>
+                    <td>{{ a.time }}</td>
+                    <td>{{ a.status }}</td>
+
+                    <td>
+                        {% if a.payment_status == "پرداخت شده" %}
+                            <span class="status-paid">
+                                پرداخت شده
+                            </span>
+                        {% else %}
+                            <span class="status-unpaid">
+                                پرداخت نشده
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {{ a.paid_amount }}
+                    </td>
+                </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+
+    </div>
+
 </div>
+
+<script>
+    function showAppointments(day) {
+
+        let rows = document.querySelectorAll("#appointments-list tr");
+
+        rows.forEach(row => {
+            if (row.dataset.day === day) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+
+        document.getElementById("selected-date-title").innerText =
+            "نوبت‌های روز " + parseInt(day);
+    }
+</script>
 
 {% endblock %}
