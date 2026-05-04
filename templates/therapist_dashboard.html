@@ -194,7 +194,7 @@
                 <a href="/update_status/{{ a.id }}/قطعی" style="color:blue;">●</a>
             </td>
 
-            <td>{{ a.paid_amount }}</td>
+<td>{{ "{:,}".format(a.paid_amount) }}</td>
         </tr>
         {% endfor %}
     </table>
