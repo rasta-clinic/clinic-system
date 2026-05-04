@@ -3,35 +3,38 @@
 {% block content %}
 
 <style>
-    body {
-        direction: rtl;
-        font-family: Tahoma;
+    body { direction: rtl; font-family: Tahoma; }
+
+    .header {
+        background: #00c2ea;
+        color: white;
+        padding: 15px;
+        text-align: center;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        font-size: 24px;
+    }
+
+    .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-bottom: 20px;
     }
 
     .card {
         background: white;
-        padding: 20px;
-        border-radius: 14px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-        margin-bottom: 25px;
+        padding: 15px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
-    input, select, textarea {
-        width: 100%;
-        padding: 10px;
-        margin-top: 8px;
-        margin-bottom: 10px;
-        border-radius: 8px;
-        border: 1px solid #ddd;
-    }
-
-    button {
-        background: #2f80ed;
-        color: white;
-        border: none;
-        padding: 12px;
-        border-radius: 10px;
-        width: 100%;
+    .box {
+        background: white;
+        padding: 15px;
+        border-radius: 12px;
+        margin-bottom: 20px;
     }
 
     table {
@@ -40,97 +43,150 @@
     }
 
     th, td {
-        padding: 12px;
+        padding: 10px;
         border-bottom: 1px solid #ddd;
         text-align: center;
     }
 
-    .paid { color: green; font-weight: bold; }
-    .unpaid { color: red; font-weight: bold; }
+    .btn a {
+        margin: 0 5px;
+        text-decoration: none;
+        font-size: 18px;
+    }
+
 </style>
 
-<div class="card">
-    <h2>پنل مدیریت کلینیک</h2>
-    <p>تعداد کل نوبت‌ها: {{ appointments|length }}</p>
-    <p>تعداد درمانگران: {{ therapists|length }}</p>
+<div class="header">
+    پنل درمانگر
 </div>
 
-<div class="card">
-    <h3>ثبت مراجع / نوبت جدید</h3>
+<div class="stats">
+    <div class="card">
+        <h4>کل مراجعین</h4>
+        <p>{{ total }}</p>
+    </div>
 
-    <form action="/add_appointment" method="POST">
+    <div class="card">
+        <h4>جلسات انجام شده</h4>
+        <p>{{ done }}</p>
+    </div>
 
-        <input type="text" name="patient_name" placeholder="نام مراجع" required>
-
-        <input type="text" name="patient_phone" placeholder="شماره تماس">
-
-        <input type="date" name="date" required>
-
-        <input type="time" name="time" required>
-
-        <select name="therapist_id" required>
-            {% for t in therapists %}
-            <option value="{{ t.id }}">{{ t.username }}</option>
-            {% endfor %}
-        </select>
-
-        <input type="number" name="session_fee" placeholder="تعرفه جلسه">
-
-        <input type="number" name="payment_amount" placeholder="مبلغ پرداختی">
-
-        <select name="payment_status">
-            <option value="پرداخت نشده">پرداخت نشده</option>
-            <option value="بیعانه">بیعانه</option>
-            <option value="پرداخت شده">پرداخت کامل</option>
-        </select>
-
-        <select name="payment_method">
-            <option value="">روش پرداخت</option>
-            <option value="کارت به کارت">کارت به کارت</option>
-            <option value="نقدی">نقدی</option>
-            <option value="پوز">پوز</option>
-        </select>
-
-        <input type="text" name="tracking_code" placeholder="کد رهگیری">
-
-        <textarea name="notes" placeholder="توضیحات"></textarea>
-
-        <button type="submit">ثبت نوبت</button>
-
-    </form>
+    <div class="card">
+        <h4>درآمد</h4>
+        <p>{{ "{:,}".format(income) }}</p>
+    </div>
 </div>
 
-<div class="card">
-    <h3>لیست نوبت‌ها</h3>
+<div class="box">
+    <h3>فیلتر</h3>
+
+    <a href="/therapist">همه</a> |
+    <a href="/therapist?status=قطعی">قطعی</a> |
+    <a href="/therapist?status=انجام شد">انجام شده</a> |
+    <a href="/therapist?status=کنسل شده">کنسل</a>
+</div>
+
+<div class="box">
+    <h3>امروز</h3>
 
     <table>
         <tr>
-            <th>نام مراجع</th>
-            <th>تاریخ</th>
+            <th>نام</th>
             <th>ساعت</th>
-            <th>وضعیت جلسه</th>
-            <th>پرداخت</th>
-            <th>مبلغ</th>
-            <th>کد رهگیری</th>
+            <th>عملیات</th>
         </tr>
 
-        {% for a in appointments %}
+        {% for a in today_appointments %}
         <tr>
             <td>{{ a.patient_name }}</td>
-            <td>{{ a.date }}</td>
             <td>{{ a.time }}</td>
-            <td>{{ a.status }}</td>
 
-            <td>
-                {% if a.payment_status == "پرداخت شده" %}
-                    <span class="paid">پرداخت شده</span>
-                {% else %}
-                    <span class="unpaid">پرداخت نشده</span>
-                {% endif %}
+            <td class="btn">
+                <a href="/update_status/{{ a.id }}/انجام شد">✔</a>
+                <a href="/update_status/{{ a.id }}/کنسل شده">✖</a>
+                <a href="/update_status/{{ a.id }}/قطعی">●</a>
             </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
 
+<div class="box">
+    <h3>فردا</h3>
+
+    <table>
+        <tr>
+            <th>نام</th>
+            <th>ساعت</th>
+            <th>عملیات</th>
+        </tr>
+
+        {% for a in tomorrow_appointments %}
+        <tr>
+            <td>{{ a.patient_name }}</td>
+            <td>{{ a.time }}</td>
+
+            <td class="btn">
+                <a href="/update_status/{{ a.id }}/انجام شد">✔</a>
+                <a href="/update_status/{{ a.id }}/کنسل شده">✖</a>
+                <a href="/update_status/{{ a.id }}/قطعی">●</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div class="box">
+    <h3>هفته آینده</h3>
+
+    <table>
+        <tr>
+            <th>تاریخ</th>
+            <th>نام</th>
+            <th>ساعت</th>
+            <th>عملیات</th>
+        </tr>
+
+        {% for a in next_week_appointments %}
+        <tr>
+            <td>{{ a.date }}</td>
+            <td>{{ a.patient_name }}</td>
+            <td>{{ a.time }}</td>
+
+            <td class="btn">
+                <a href="/update_status/{{ a.id }}/انجام شد">✔</a>
+                <a href="/update_status/{{ a.id }}/کنسل شده">✖</a>
+                <a href="/update_status/{{ a.id }}/قطعی">●</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div class="box">
+    <h3>همه نوبت‌ها</h3>
+
+    <table>
+        <tr>
+            <th>تاریخ</th>
+            <th>نام</th>
+            <th>ساعت</th>
+            <th>مبلغ</th>
+            <th>عملیات</th>
+        </tr>
+
+        {% for a in all_appointments %}
+        <tr>
+            <td>{{ a.date }}</td>
+            <td>{{ a.patient_name }}</td>
+            <td>{{ a.time }}</td>
             <td>{{ "{:,}".format(a.paid_amount) }}</td>
-            <td>{{ a.tracking_code }}</td>
+
+            <td class="btn">
+                <a href="/update_status/{{ a.id }}/انجام شد">✔</a>
+                <a href="/update_status/{{ a.id }}/کنسل شده">✖</a>
+                <a href="/update_status/{{ a.id }}/قطعی">●</a>
+            </td>
         </tr>
         {% endfor %}
     </table>
