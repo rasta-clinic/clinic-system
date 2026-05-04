@@ -129,17 +129,15 @@
             <td>{{ a.patient_name }}</td>
             <td>{{ a.time }}</td>
 
-            <td>
-                {% if a.status == "رزرو اولیه" %}
-                    <span style="color:orange;">رزرو اولیه</span>
-                {% elif a.status == "قطعی" %}
-                    <span style="color:blue;">قطعی</span>
-                {% elif a.status == "انجام شد" %}
-                    <span style="color:green;">انجام شد</span>
-                {% elif a.status == "کنسل شده" %}
-                    <span style="color:red;">کنسل</span>
-                {% endif %}
-            </td>
+<td>
+
+    <a href="/update_status/{{ a.id }}/انجام شد" style="color:green;">✔</a>
+
+    <a href="/update_status/{{ a.id }}/کنسل شده" style="color:red; margin:0 10px;">✖</a>
+
+    <a href="/update_status/{{ a.id }}/قطعی" style="color:blue;">●</a>
+
+</td>
         </tr>
         {% endfor %}
     </table>
