@@ -42,10 +42,6 @@
         margin-bottom: 25px;
     }
 
-    .section-box h3 {
-        margin-bottom: 15px;
-    }
-
     table {
         width: 100%;
         border-collapse: collapse;
@@ -57,44 +53,16 @@
         text-align: center;
     }
 
-    .paid {
-        color: green;
-        font-weight: bold;
-    }
+    .paid { color: green; font-weight: bold; }
+    .unpaid { color: red; font-weight: bold; }
 
-    .unpaid {
-        color: red;
-        font-weight: bold;
-    }
-
-    .top-buttons {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 20px;
-    }
-
-    .top-buttons a {
-        flex: 1;
-        text-align: center;
-        background: #2f80ed;
-        color: white;
-        padding: 12px;
-        border-radius: 10px;
-        text-decoration: none;
-    }
 </style>
 
 <div class="dashboard-header">
     پنل درمانگر
 </div>
 
-<div class="top-buttons">
-    <a href="/calendar">تقویم ماهانه</a>
-    <a href="/weekly-calendar">تقویم هفتگی</a>
-</div>
-
 <div class="stats-box">
-
     <div class="stat-card">
         <h3>کل مراجعین</h3>
         <p>{{ total }}</p>
@@ -104,16 +72,15 @@
         <h3>جلسات انجام شده</h3>
         <p>{{ done }}</p>
     </div>
-
 </div>
 
+<!-- امروز -->
 <div class="section-box">
-
     <h3>نوبت‌های امروز</h3>
 
     <table>
         <tr>
-            <th>نام مراجع</th>
+            <th>نام</th>
             <th>ساعت</th>
             <th>وضعیت</th>
             <th>پرداخت</th>
@@ -123,33 +90,95 @@
         <tr>
             <td>{{ a.patient_name }}</td>
             <td>{{ a.time }}</td>
-            <td>{{ a.status }}</td>
+
+            <td>
+                {% if a.status == "رزرو اولیه" %}
+                    <span style="color:orange;">رزرو اولیه</span>
+                {% elif a.status == "قطعی" %}
+                    <span style="color:blue;">قطعی</span>
+                {% elif a.status == "انجام شد" %}
+                    <span style="color:green;">انجام شد</span>
+                {% elif a.status == "کنسل شده" %}
+                    <span style="color:red;">کنسل</span>
+                {% endif %}
+            </td>
 
             <td>
                 {% if a.payment_status == "پرداخت شده" %}
-                    <span class="paid">پرداخت شده</span>
+                    <span class="paid">✓</span>
                 {% else %}
-                    <span class="unpaid">پرداخت نشده</span>
+                    <span class="unpaid">✗</span>
                 {% endif %}
             </td>
         </tr>
         {% endfor %}
-
     </table>
-
 </div>
 
+<!-- فردا -->
 <div class="section-box">
+    <h3>نوبت‌های فردا</h3>
 
+    <table>
+        <tr>
+            <th>نام</th>
+            <th>ساعت</th>
+            <th>وضعیت</th>
+        </tr>
+
+        {% for a in tomorrow_appointments %}
+        <tr>
+            <td>{{ a.patient_name }}</td>
+            <td>{{ a.time }}</td>
+
+            <td>
+                {% if a.status == "رزرو اولیه" %}
+                    <span style="color:orange;">رزرو اولیه</span>
+                {% elif a.status == "قطعی" %}
+                    <span style="color:blue;">قطعی</span>
+                {% elif a.status == "انجام شد" %}
+                    <span style="color:green;">انجام شد</span>
+                {% elif a.status == "کنسل شده" %}
+                    <span style="color:red;">کنسل</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<!-- هفته آینده -->
+<div class="section-box">
+    <h3>هفته آینده</h3>
+
+    <table>
+        <tr>
+            <th>تاریخ</th>
+            <th>نام</th>
+            <th>ساعت</th>
+        </tr>
+
+        {% for a in next_week_appointments %}
+        <tr>
+            <td>{{ a.date }}</td>
+            <td>{{ a.patient_name }}</td>
+            <td>{{ a.time }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<!-- همه -->
+<div class="section-box">
     <h3>همه نوبت‌ها</h3>
 
     <table>
         <tr>
             <th>تاریخ</th>
-            <th>نام مراجع</th>
+            <th>نام</th>
             <th>ساعت</th>
-            <th>وضعیت جلسه</th>
-            <th>مبلغ پرداختی</th>
+            <th>وضعیت</th>
+            <th>مبلغ</th>
         </tr>
 
         {% for a in all_appointments %}
@@ -157,13 +186,23 @@
             <td>{{ a.date }}</td>
             <td>{{ a.patient_name }}</td>
             <td>{{ a.time }}</td>
-            <td>{{ a.status }}</td>
+
+            <td>
+                {% if a.status == "رزرو اولیه" %}
+                    <span style="color:orange;">رزرو اولیه</span>
+                {% elif a.status == "قطعی" %}
+                    <span style="color:blue;">قطعی</span>
+                {% elif a.status == "انجام شد" %}
+                    <span style="color:green;">انجام شد</span>
+                {% elif a.status == "کنسل شده" %}
+                    <span style="color:red;">کنسل</span>
+                {% endif %}
+            </td>
+
             <td>{{ a.paid_amount }}</td>
         </tr>
         {% endfor %}
-
     </table>
-
 </div>
 
 {% endblock %}
