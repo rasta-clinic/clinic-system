@@ -255,9 +255,7 @@ def reception_dashboard():
     )
 
 # ---------------- THERAPIST DASHBOARD ----------------
-
 @app.route('/therapist')
-
 def therapist_dashboard():
 
     if session.get('role') != "therapist":
@@ -267,15 +265,31 @@ def therapist_dashboard():
 
     all_appointments = Appointment.query.filter_by(
         therapist_id=therapist_id
-    ).order_by(
-        Appointment.date
-    ).all()
+    ).order_by(Appointment.date).all()
 
-    today = datetime.now().strftime("%Y-%m-%d")
+    today_date = datetime.now()
+
+    today = today_date.strftime("%Y-%m-%d")
+    tomorrow = (today_date.replace(day=today_date.day + 1)).strftime("%Y-%m-%d")
+
+    next_week_dates = []
+    for i in range(2, 8):
+        next_day = today_date.replace(day=today_date.day + i)
+        next_week_dates.append(next_day.strftime("%Y-%m-%d"))
 
     today_appointments = Appointment.query.filter_by(
         therapist_id=therapist_id,
         date=today
+    ).all()
+
+    tomorrow_appointments = Appointment.query.filter_by(
+        therapist_id=therapist_id,
+        date=tomorrow
+    ).all()
+
+    next_week_appointments = Appointment.query.filter(
+        Appointment.therapist_id == therapist_id,
+        Appointment.date.in_(next_week_dates)
     ).all()
 
     total = len(all_appointments)
@@ -289,6 +303,8 @@ def therapist_dashboard():
         'therapist_dashboard.html',
         all_appointments=all_appointments,
         today_appointments=today_appointments,
+        tomorrow_appointments=tomorrow_appointments,
+        next_week_appointments=next_week_appointments,
         total=total,
         done=done
     )
