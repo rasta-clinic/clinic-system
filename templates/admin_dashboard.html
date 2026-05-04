@@ -129,7 +129,7 @@
                 {% endif %}
             </td>
 
-            <td>{{ a.paid_amount }}</td>
+            <td>{{ "{:,}".format(a.paid_amount) }}</td>
             <td>{{ a.tracking_code }}</td>
         </tr>
         {% endfor %}
