@@ -556,7 +556,12 @@ def quick_book():
     db.session.commit()
 
     return redirect('/weekly-calendar')
+def to_persian(value):
+    digits = "0123456789"
+    persian_digits = "۰۱۲۳۴۵۶۷۸۹"
+    return str(value).translate(str.maketrans(digits, persian_digits))
 
+app.jinja_env.filters['to_persian'] = to_persian
 # ---------------- RUN ----------------
 
 if __name__ == '__main__':
