@@ -52,37 +52,24 @@
         color: white;
     }
 
-    .selected-day {
-        background: #00c2ea !important;
-        color: white;
-    }
-
     .appointments-box {
         margin-top: 35px;
     }
 
-    .appointments-box table {
+    table {
         width: 100%;
         border-collapse: collapse;
         margin-top: 15px;
     }
 
-    .appointments-box th,
-    .appointments-box td {
+    th, td {
         padding: 12px;
         border-bottom: 1px solid #ddd;
         text-align: center;
     }
 
-    .status-paid {
-        color: green;
-        font-weight: bold;
-    }
-
-    .status-unpaid {
-        color: red;
-        font-weight: bold;
-    }
+    .status-paid { color: green; font-weight: bold; }
+    .status-unpaid { color: red; font-weight: bold; }
 </style>
 
 <div class="calendar-box">
@@ -117,7 +104,7 @@
             <div class="day {% if has_appt.found %}has-appointment{% endif %}"
                  onclick="showAppointments('{{ '%02d' % day }}')">
 
-                {{ day }}
+                {{ day | to_persian }}
 
             </div>
 
@@ -151,18 +138,14 @@
 
                     <td>
                         {% if a.payment_status == "پرداخت شده" %}
-                            <span class="status-paid">
-                                پرداخت شده
-                            </span>
+                            <span class="status-paid">پرداخت شده</span>
                         {% else %}
-                            <span class="status-unpaid">
-                                پرداخت نشده
-                            </span>
+                            <span class="status-unpaid">پرداخت نشده</span>
                         {% endif %}
                     </td>
 
                     <td>
-                        {{ a.paid_amount }}
+                        {{ "{:,}".format(a.paid_amount) | to_persian }}
                     </td>
                 </tr>
                 {% endfor %}
@@ -175,6 +158,10 @@
 </div>
 
 <script>
+    function toPersianNumber(num) {
+        return num.toString().replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+    }
+
     function showAppointments(day) {
 
         let rows = document.querySelectorAll("#appointments-list tr");
@@ -188,7 +175,7 @@
         });
 
         document.getElementById("selected-date-title").innerText =
-            "نوبت‌های روز " + parseInt(day);
+            "نوبت‌های روز " + toPersianNumber(parseInt(day));
     }
 </script>
 
